@@ -1,0 +1,42 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install XcodeGen
+      run: brew install xcodegen
+
+    - name: Generate Xcode Project
+      run: xcodegen generate
+
+    - name: Build App (No Code Signing)
+      run: |
+        xcodebuild clean build \
+          -project NIUCustomApp.xcodeproj \
+          -scheme NIUCustomApp \
+          -sdk iphoneos \
+          -configuration Release \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_IDENTITY=""
+
+    - name: Package IPA
+      run: |
+        mkdir -p Payload
+        mv build/Release-iphoneos/NIUCustomApp.app Payload/
+        zip -r NIUCustomApp.ipa Payload
+
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: NIUCustomApp-IPA
+        path: NIUCustomApp.ipa
