@@ -5,7 +5,7 @@ targets:
   NIUCustomApp:
     type: application
     platform: iOS
-    deploymentTarget: "15.0"
+    deploymentTarget: "16.0"
     sources: [NIUCustomApp]
     settings:
       CODE_SIGNING_ALLOWED: NO
